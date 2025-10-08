@@ -1,8 +1,9 @@
-version: '3.8'
+
+version: "3.8"
 
 services:
   telegraf:
-    image: telegraf
+    image: telegraf:latest
     volumes:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     ports:
@@ -15,7 +16,7 @@ services:
       - influxdb
 
   influxdb:
-    image: influxdb
+    image: influxdb:latest
     volumes:
       - ./influxdb/data:/var/lib/influxdb
     ports:
@@ -24,10 +25,10 @@ services:
       - dokploy-network
 
   chronograf:
-    image: chronograf
+    image: chronograf:latest
     environment:
-      INFLUXDB_URL: http://influxdb:8086
-      KAPACITOR_URL: http://kapacitor:9092
+      - INFLUXDB_URL=http://influxdb:8086
+      - KAPACITOR_URL=http://kapacitor:9092
     ports:
       - "8888:8888"
     networks:
@@ -35,12 +36,19 @@ services:
     depends_on:
       - influxdb
       - kapacitor
+    labels:
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.chronograf.rule=Host(`chronograf.iotwise.com.au`)
+      - traefik.http.routers.chronograf.entrypoints=websecure
+      - traefik.http.routers.chronograf.tls.certresolver=letsencrypt
+      - traefik.http.services.chronograf.loadbalancer.server.port=8888
+      - traefik.enable=true
 
   kapacitor:
-    image: kapacitor
+    image: kapacitor:latest
     environment:
-      KAPACITOR_HOSTNAME: kapacitor
-      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
+      - KAPACITOR_HOSTNAME=kapacitor
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
     ports:
       - "9092:9092"
     networks:
@@ -50,8 +58,6 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
     networks:
       - dokploy-network
     env_file:
@@ -62,14 +68,15 @@ services:
     depends_on:
       - influxdb
     labels:
-      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
       - traefik.http.routers.grafana.rule=Host(`app.iotwise.com.au`)
       - traefik.http.routers.grafana.entrypoints=websecure
-      - traefik.http.routers.grafana.tls.certResolver=letsencrypt
+      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
       - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.enable=true
 
   influxdb-cli:
-    image: influxdb
+    image: influxdb:latest
     entrypoint:
       - influx
       - -host
@@ -80,7 +87,7 @@ services:
       - influxdb
 
   kapacitor-cli:
-    image: kapacitor
+    image: kapacitor:latest
     entrypoint:
       - kapacitor
       - -url
@@ -90,6 +97,25 @@ services:
     depends_on:
       - kapacitor
 
+  traefik:
+    image: traefik:latest
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email= info@iwebx.com.au"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "8080:80" # For HTTP-01 challenge
+      - "8443:443" # For HTTPS, avoiding 443 conflict
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - dokploy-network
+
 networks:
   dokploy-network:
-    external: true
+    driver: bridge
