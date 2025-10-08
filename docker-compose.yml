@@ -77,8 +77,8 @@ services:
   networks:
     - dokploy-network
   networks: 
-    - dokploy-network
-    - external = true
+    dokploy-network:
+      external:true
 
     labels:
     - traefik.enable=true
