@@ -72,3 +72,20 @@ services:
       KAPACITOR_URL: http://kapacitor:9092
     links:
       - kapacitor
+
+  #Dokploy Settings
+  networks:
+    - deploy-network
+  networks: 
+    - deploy-network
+    - external = true
+
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.next-app.rule=Host(`app.iotwise.com.au`)
+    - traefik.http.routers.next-app.entrypoints=websecure
+    - traefik.http.routers.next-app.tls.certResolver=letsencrypt
+    - traefik.http.services.next-app.loadbalancer.server.port=3000
+
+    
+    
