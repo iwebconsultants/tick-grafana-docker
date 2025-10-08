@@ -12,6 +12,8 @@ services:
       - "8092:8092/udp"
       - "8094:8094"
       - "8125:8125/udp"
+    networks:
+    - dokploy-network
   # Define an InfluxDB service
   influxdb:
     image: influxdb
@@ -19,6 +21,8 @@ services:
       - ./influxdb/data:/var/lib/influxdb
     ports:
       - "8086:8086"
+    networks:
+      - dokploy-network
   # Define a Chronograf service
   chronograf:
     image: chronograf
@@ -27,6 +31,9 @@ services:
       KAPACITOR_URL: http://kapacitor:9092
     ports:
       - "8888:8888"
+    networks:
+      - dokploy-network
+
     links:
       - influxdb
       - kapacitor
@@ -40,11 +47,17 @@ services:
       - influxdb
     ports:
       - "9092:9092"
+    networks:
+      - dokploy-network
+
   # Define a grafana service
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
+    networks:
+      - dokploy-network
+
     env_file:
       - 'env.grafana'
     volumes:
@@ -74,8 +87,7 @@ services:
       - kapacitor
 
   #Dokploy Settings
-  networks:
-    - dokploy-network
+
   networks: 
     dokploy-network:
       external:true
