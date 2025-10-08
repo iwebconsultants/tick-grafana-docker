@@ -1,8 +1,9 @@
+```yaml
 version: '3.8'
 
 services:
   telegraf:
-    image: telegraf
+    image: telegraf:latest
     volumes:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     ports:
@@ -15,7 +16,7 @@ services:
       - influxdb
 
   influxdb:
-    image: influxdb
+    image: influxdb:latest
     volumes:
       - ./influxdb/data:/var/lib/influxdb
     ports:
@@ -24,10 +25,10 @@ services:
       - dokploy-network
 
   chronograf:
-    image: chronograf
+    image: chronograf:latest
     environment:
-      INFLUXDB_URL: http://influxdb:8086
-      KAPACITOR_URL: http://kapacitor:9092
+      - INFLUXDB_URL=http://influxdb:8086
+      - KAPACITOR_URL=http://kapacitor:9092
     ports:
       - "8888:8888"
     networks:
@@ -37,10 +38,10 @@ services:
       - kapacitor
 
   kapacitor:
-    image: kapacitor
+    image: kapacitor:latest
     environment:
-      KAPACITOR_HOSTNAME: kapacitor
-      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
+      - KAPACITOR_HOSTNAME=kapacitor
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
     ports:
       - "9092:9092"
     networks:
@@ -50,8 +51,6 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
     networks:
       - dokploy-network
     env_file:
@@ -65,11 +64,11 @@ services:
       - traefik.enable=true
       - traefik.http.routers.grafana.rule=Host(`app.iotwise.com.au`)
       - traefik.http.routers.grafana.entrypoints=websecure
-      - traefik.http.routers.grafana.tls.certResolver=letsencrypt
+      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
       - traefik.http.services.grafana.loadbalancer.server.port=3000
 
   influxdb-cli:
-    image: influxdb
+    image: influxdb:latest
     entrypoint:
       - influx
       - -host
@@ -80,7 +79,7 @@ services:
       - influxdb
 
   kapacitor-cli:
-    image: kapacitor
+    image: kapacitor:latest
     entrypoint:
       - kapacitor
       - -url
@@ -92,4 +91,5 @@ services:
 
 networks:
   dokploy-network:
-    external: true
+    driver: bridge
+```
