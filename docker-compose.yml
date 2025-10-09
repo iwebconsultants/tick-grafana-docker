@@ -5,7 +5,7 @@ services:
   telegraf:
     image: telegraf:latest
     volumes:
-      - ..files/./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ..files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     ports:
       - "8092:8092/udp"
       - "8094:8094"
@@ -18,7 +18,7 @@ services:
   influxdb:
     image: influxdb:latest
     volumes:
-      - ..files/./influxdb/data:/var/lib/influxdb
+      - ..files/influxdb/data:/var/lib/influxdb
     ports:
       - "8086:8086"
     networks:
@@ -63,8 +63,8 @@ services:
     env_file:
       - env.grafana
     volumes:
-      - ..files/./grafana/etc:/etc/grafana
-      - ..files/./grafana/data:/var/lib/grafana
+      - ..files/grafana/etc:/etc/grafana
+      - ..files/grafana/data:/var/lib/grafana
     depends_on:
       - influxdb
     labels:
@@ -112,7 +112,7 @@ services:
       - "8443:443" # For HTTPS, avoiding 443 conflict
     volumes:
       - ..files/var/run/docker.sock:/var/run/docker.sock:ro
-      - ..files/./letsencrypt:/letsencrypt
+      - ..files/letsencrypt:/letsencrypt
     networks:
       - dokploy-network
 
