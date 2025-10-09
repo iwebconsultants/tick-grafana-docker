@@ -61,8 +61,8 @@ services:
       - ../files/grafana/etc/:/etc/grafana
       - ../files/grafana/data/:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=dummyuser
-      - GF_SECURITY_ADMIN_PASSWORD=dummypass1234
+      - GF_SECURITY_ADMIN_USER=telegraf
+      - GF_SECURITY_ADMIN_PASSWORD=metricsmetricsmetricsmetrics
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_PATHS_CONFIG="./config.ini:/etc/grafana/config.ini"
     networks:
