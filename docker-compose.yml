@@ -35,7 +35,7 @@ services:
       - "8888:8888"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.chronograf.rule=Host(`chronograf.your-domain.com`)"
+      - "traefik.http.routers.chronograf.rule=Host(`chronograf.iotwise.com.au`)"
       - "traefik.http.routers.chronograf.entrypoints=websecure"
       - "traefik.http.routers.chronograf.tls.certresolver=letsencrypt"
       - "traefik.http.services.chronograf.loadbalancer.server.port=8888"
@@ -65,7 +65,7 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.your-domain.com`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.iotwise.com.au`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
