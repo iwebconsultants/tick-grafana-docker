@@ -64,7 +64,7 @@ services:
       - GF_SECURITY_ADMIN_USER=dummyuser
       - GF_SECURITY_ADMIN_PASSWORD=dummypass1234
       - GF_AUTH_ANONYMOUS_ENABLED=true
-      # - GF_PATHS_CONFIG="./config.ini:/etc/grafana/config.ini"
+      - GF_PATHS_CONFIG="./config.ini:/etc/grafana/config.ini"
     networks:
       - dokploy-network
     ports:
