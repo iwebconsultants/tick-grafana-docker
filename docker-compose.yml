@@ -1,32 +1,28 @@
+
+version: '3'
+
 services:
   # Define a Telegraf service
   telegraf:
     image: telegraf
     volumes:
-      - ./files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     networks:
       - dokploy-network
     ports:
-      - "8092/udp"
-      - "8094"
-      - "8125/udp"
-    depends_on:
-      - influxdb
+      - "8092:8092/udp"
+      - "8094:8094"
+      - "8125:8125/udp"
 
   # Define an InfluxDB service
   influxdb:
     image: influxdb
     volumes:
-      - ./files/influxdb/data:/var/lib/influxdb
+      - ../files/influxdb/data:/var/lib/influxdb
     networks:
       - dokploy-network
     ports:
-      - "8086"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8086/ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - "8086:8086"
 
   # Define a Chronograf service
   chronograf:
@@ -37,16 +33,13 @@ services:
     networks:
       - dokploy-network
     ports:
-      - "8888"
+      - "8888:8888"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.chronograf.rule=Host(`chronograf.iotwise.com.au`)"
       - "traefik.http.routers.chronograf.entrypoints=websecure"
       - "traefik.http.routers.chronograf.tls.certresolver=letsencrypt"
       - "traefik.http.services.chronograf.loadbalancer.server.port=8888"
-    depends_on:
-      - influxdb
-      - kapacitor
 
   # Define a Kapacitor service
   kapacitor:
@@ -57,30 +50,26 @@ services:
     networks:
       - dokploy-network
     ports:
-      - "9092"
-    depends_on:
-      - influxdb
+      - "9092:9092"
 
   # Define a grafana service
   grafana:
     image: grafana/grafana:latest
     env_file:
-      - ./files/env.grafana
+      - 'env.grafana'
     volumes:
-      - ./files/grafana/etc:/etc/grafana
-      - ./files/grafana/data:/var/lib/grafana
+      - ../files/grafana/etc/:/etc/grafana
+      - ../files/grafana/data/:/var/lib/grafana
     networks:
       - dokploy-network
     ports:
-      - "3000"
+      - "3000:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.iotwise.com.au`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-    depends_on:
-      - influxdb
 
   # Define a service for using the influx CLI tool.
   # docker-compose run influxdb-cli
@@ -92,8 +81,6 @@ services:
       - influxdb
     networks:
       - dokploy-network
-    depends_on:
-      - influxdb
 
   # Define a service for using the kapacitor CLI tool.
   # docker-compose run kapacitor-cli
@@ -104,8 +91,6 @@ services:
       KAPACITOR_URL: http://kapacitor:9092
     networks:
       - dokploy-network
-    depends_on:
-      - kapacitor
 
 networks:
   dokploy-network:
