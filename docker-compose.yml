@@ -5,7 +5,7 @@ services:
   telegraf:
     image: telegraf
     volumes:
-      - ../files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     networks:
       - dokploy-network
     ports:
