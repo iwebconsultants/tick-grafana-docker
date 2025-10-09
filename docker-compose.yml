@@ -1,11 +1,10 @@
-
 version: "3.8"
 
 services:
   telegraf:
     image: telegraf:latest
     volumes:
-      - ..files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     ports:
       - "8092:8092/udp"
       - "8094:8094"
@@ -18,7 +17,7 @@ services:
   influxdb:
     image: influxdb:latest
     volumes:
-      - ..files/influxdb/data:/var/lib/influxdb
+      - ./files/influxdb/data:/var/lib/influxdb
     ports:
       - "8086:8086"
     networks:
@@ -63,8 +62,8 @@ services:
     env_file:
       - env.grafana
     volumes:
-      - ..files/grafana/etc:/etc/grafana
-      - ..files/grafana/data:/var/lib/grafana
+      - ./files/grafana/etc:/etc/grafana
+      - ./files/grafana/data:/var/lib/grafana
     depends_on:
       - influxdb
     labels:
@@ -103,7 +102,7 @@ services:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email= info@iwebx.com.au"
+      - "--certificatesresolvers.letsencrypt.acme.email=info@iwebx.com.au"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
@@ -111,8 +110,8 @@ services:
       - "8080:80" # For HTTP-01 challenge
       - "8443:443" # For HTTPS, avoiding 443 conflict
     volumes:
-      - ..files/var/run/docker.sock:/var/run/docker.sock:ro
-      - ..files/letsencrypt:/letsencrypt
+      - ./files/var/run/docker.sock:/var/run/docker.sock:ro
+      - ./files/letsencrypt:/letsencrypt
     networks:
       - dokploy-network
 
