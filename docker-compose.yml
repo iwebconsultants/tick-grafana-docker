@@ -4,7 +4,7 @@ services:
   telegraf:
     image: telegraf:latest
     volumes:
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ../files/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     ports:
       - "8092:8092/udp"
       - "8094:8094"
@@ -17,7 +17,7 @@ services:
   influxdb:
     image: influxdb:latest
     volumes:
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/influxdb/data:/var/lib/influxdb
+      - ../files/influxdb/data:/var/lib/influxdb
     ports:
       - "8086:8086"
     networks:
@@ -60,10 +60,10 @@ services:
     networks:
       - dokploy-network
     env_file:
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/env.grafana
+      - ../files/env.grafana
     volumes:
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/grafana/etc:/etc/grafana
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/grafana/data:/var/lib/grafana
+      - ../files/grafana/etc:/etc/grafana
+      - ../files/grafana/data:/var/lib/grafana
     depends_on:
       - influxdb
     labels:
@@ -110,8 +110,8 @@ services:
       - "8080:80" # For HTTP-01 challenge
       - "8443:443" # For HTTPS, avoiding 443 conflict
     volumes:
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/dokploy/compose/test-tickstack-jegrsw/code/files/letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ../files/letsencrypt:/letsencrypt
     networks:
       - dokploy-network
 
